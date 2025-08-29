@@ -1,31 +1,31 @@
-Vehicle Browser – NHTSA (API Only)
+🚗 Vehicle Browser – NHTSA (API Only)
 
-A small .NET 8 Web API that lets clients:
+A small .NET 8 Web API that allows clients to explore car data from the official NHTSA VPIC API
+:
 
-List all car makes (with optional search/sort/paging)
+List all car makes (with optional search, sort, and paging)
 
 List vehicle types for a given make
 
-List models for a given make + year (optional vehicle type, with search/sort/paging)
+List models for a given make + year (with optional vehicle type, search, sort, and paging)
 
-All data is retrieved from the public NHTSA VPIC API.
+✨ Features
 
-Features
+3 endpoints only (no frontend UI)
 
-3 endpoints only (no UI)
+MediatR for clean CQRS-style handlers
 
-MediatR for CQRS-style handlers
-
-Typed HttpClient + options binding
+Typed HttpClient + options binding for external API calls
 
 Result<> pattern for safe error handling
 
-Runs locally with Swagger (no Docker)
+Runs locally with Swagger UI (no Docker required)
 
-Prerequisites
+📦 Prerequisites
 
 .NET 8 SDK
 
-(Optional) Postman / curl for testing
+(Optional) Postman
+ or curl for manual testing
 
-Internet access (calls NHTSA API)
+Internet access (to call the NHTSA VPIC API)

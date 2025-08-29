@@ -13,7 +13,7 @@ namespace RepoPattrenWithUnitOfWork.Core.Interface
         Task<T> GetByIdAsynclong(long id);
         Task<IEnumerable<T>> GetAll();
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
-        Task<long?> MaxAsync(Expression<Func<T, long>> selector);
+     
         Task<T> FindByIdAsync(Expression<Func<T, bool>> predicate, string[]? includes = null);
         Task<IEnumerable<T>> FindAll(Expression<Func<T, bool>> predicate, string[]? includes = null);
         IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, int take, int skip);

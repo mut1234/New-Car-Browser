@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using RepoPattrenWithUnitOfWork.Core;
+using RepoPattrenWithUnitOfWork.Core.Interface;
+using RepoPattrenWithUnitOfWork.Core.Models;
+using RepoPattrenWithUnitOfWork.EF.Reposiories;
 
 namespace RepoPattrenWithUnitOfWork.EF
 {
@@ -10,7 +13,7 @@ namespace RepoPattrenWithUnitOfWork.EF
         private readonly ApplicationDbContext _context;
 
         public DatabaseFacade Database => _context.Database;
-   
+
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -79,5 +82,7 @@ namespace RepoPattrenWithUnitOfWork.EF
         {
             _context.Dispose();
         }
+
+       
     }
 }

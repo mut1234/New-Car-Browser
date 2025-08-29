@@ -1,12 +1,19 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RepoPattrenWithUnitOfWork.Core;
+using RepoPattrenWithUnitOfWork.Core.CQRS.Handllers.Author;
+using RepoPattrenWithUnitOfWork.Core.CQRS.Querys;
+using RepoPattrenWithUnitOfWork.Core.Dto;
+using RepoPattrenWithUnitOfWork.Core.Interface.Service;
+using RepoPattrenWithUnitOfWork.Core.Service.ExternalServices;
 using RepoPattrenWithUnitOfWork.EF;
 using RepoPattrenWithUnitOfWork.EF.Triggers;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<NhtsaApiSettings>(
+    builder.Configuration.GetSection("ApiSettings:NhtsaApi"));
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -33,7 +40,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
 
 //builder.Services.AddTransient(typeof(IBaseRepository<>),typeof(BaseRepository<>));//register to baserepo inside api
 
+builder.Services.Configure<NhtsaApiSettings>(
+    builder.Configuration.GetSection("ApiSettings:NhtsaApi"));
+
+builder.Services.AddMediatR(Assembly.GetAssembly(typeof(GetAllMakesQuery)));
+
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddHttpClient<INhtsaApiClient, NhtsaApiClient>((sp, client) =>
+{
+    var opts = sp.GetRequiredService<
+        Microsoft.Extensions.Options.IOptions<NhtsaApiSettings>>().Value;
+
+    client.BaseAddress = new Uri(opts.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "VehicleApp/1.0");
+});
+builder.Services.AddScoped<VehicleMakeQueryProcessor>();
+builder.Services.AddScoped<VehicleModelQueryProcessor>();
 
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 ////builder.Services.AddMediatR(Assembly.GetAssembly(typeof(GetByIdClientQuery)));

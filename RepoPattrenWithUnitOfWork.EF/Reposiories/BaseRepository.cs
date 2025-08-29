@@ -26,7 +26,7 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
 
         public T GetById(int id)
         {
-            return _context.Set<T>().Find(id);
+            return _context.Set<T>().Find(id)!;
         }
 
         public IQueryable<T> Query()
@@ -40,7 +40,7 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
         public async Task<T> GetByIdAsync(int id)
         {
             return await _context.Set<T>().FindAsync(id);
-        }     
+        }
         public async Task<T> GetByIdAsynclong(long id)
         {
             return await _context.Set<T>().FindAsync(id);
@@ -54,30 +54,29 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
 
         public async Task<T> FindByIdAsync(Expression<Func<T, bool>> predicate, string[]? includes = null)
         {
-            IQueryable<T> query = _context.Set<T>(); // Initialize the query
+            IQueryable<T> query = _context.Set<T>();
 
             if (includes != null)
             {
                 foreach (var include in includes)
                 {
-                    query = query.Include(include); // Include navigation properties
+                    query = query.Include(include);
                 }
             }
 
-            // Use FirstOrDefaultAsync instead of SingleOrDefaultAsync to avoid exceptions when multiple records match
             return await query.FirstOrDefaultAsync(predicate);
         }
         public async Task<IEnumerable<T>> FindAll(Expression<Func<T, bool>> predicate, string[]? includes = null)
         {
-            IQueryable<T> query = _context.Set<T>();// this to make not null with author relation 
+            IQueryable<T> query = _context.Set<T>();
             if (includes != null)
-            { // send name of table that we want include
+            {
                 foreach (var include in includes)
                 {
-                    query = query.Include(include);//include will fix null 
+                    query = query.Include(include);
                 }
             }
-            return await query.Where(predicate).ToArrayAsync();//the different here we can here return many so we use where with query
+            return await query.Where(predicate).ToArrayAsync();
         }
 
         public IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate, int take, int skip)
@@ -114,20 +113,16 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
 
             _context.Set<T>().Add(entity);
 
-            //  _context.SaveChanges();
-
             return entity;
         }
         public async Task<T> AddAsync(T entity)
         {
-           await _context.Set<T>().AddAsync(entity);
-     //        _context.SaveChangesAsync();
-            return  entity;
+            await _context.Set<T>().AddAsync(entity);
+            return entity;
         }
         public IEnumerable<T> AddRange(IEnumerable<T> entities)
         {
             _context.Set<T>().AddRange(entities);
-            //  _context.SaveChanges();
 
             return entities;
         }
@@ -136,10 +131,10 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
             return await _context.Set<T>().Where(predicate).ToListAsync();
         }
         public Task<T> SingleAsync(
-    Expression<Func<T, bool>>? predicate,
-    bool asNoTracking = true,
-    CancellationToken ct = default,
-    params Expression<Func<T, object>>[] includes)
+           Expression<Func<T, bool>>? predicate,
+           bool asNoTracking = true,
+           CancellationToken ct = default,
+          params Expression<Func<T, object>>[] includes)
         {
             if (predicate is null) throw new ArgumentNullException(nameof(predicate));
 
@@ -208,12 +203,6 @@ namespace RepoPattrenWithUnitOfWork.EF.Reposiories
         public int Count(Expression<Func<T, bool>> predicate)
         {
             return _context.Set<T>().Count(predicate);
-        }
-       
-        public async Task<long?> MaxAsync(Expression<Func<T, long>> selector)
-        {
-            var maxValue = await _context.Set<T>().DefaultIfEmpty().MaxAsync(selector);
-            return  maxValue == 0 ? (long?)null : maxValue;
         }
 
 

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using AutoMapper;
+using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using RepoPattrenWithUnitOfWork.Core.CQRS.Handllers.Author;
 using RepoPattrenWithUnitOfWork.Core.CQRS.Querys;
@@ -12,17 +13,20 @@ public class VehicleService : IVehicleService
     private readonly VehicleMakeQueryProcessor _queryMakeProcessor;
     private readonly VehicleModelQueryProcessor _queryModelProcessor;
     private readonly ILogger<VehicleService> _logger;
+    private readonly IMapper _mapper;
 
     public VehicleService(
         INhtsaApiClient nhtsaClient,
         VehicleMakeQueryProcessor queryMakeProcessor,
         VehicleModelQueryProcessor queryModelProcessor,
-        ILogger<VehicleService> logger)
+        ILogger<VehicleService> logger
+        , IMapper mapper)
     {
         _nhtsaClient = nhtsaClient;
         _queryMakeProcessor = queryMakeProcessor;
         _queryModelProcessor = queryModelProcessor;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<Result<PagedResult<GetAllMakesDto>>> GetAllMakesAsync(
@@ -38,11 +42,9 @@ public class VehicleService : IVehicleService
             if (apiResult.IsFailure)
                 return Result.Failure<PagedResult<GetAllMakesDto>>(apiResult.Error);
 
-            var dtos = apiResult.Value.Results.Select(x => new GetAllMakesDto
-            {
-                MakeId = x.MakeId,
-                MakeName = x.MakeName?.Trim()
-            });
+            //_mapper
+            var dtos = _mapper.Map<List<GetAllMakesDto>>(apiResult.Value.Results);
+
 
             var result = _queryMakeProcessor.ProcessQuery(dtos, query);
 
@@ -70,13 +72,9 @@ public class VehicleService : IVehicleService
         if (apiResult.IsFailure)
             return Result.Failure<List<VehicleTypeDto>>(apiResult.Error);
 
-        var dtos = apiResult.Value.Results
-            .Select(x => new VehicleTypeDto
-            {
-                VehicleTypeId = x.VehicleTypeId,
-                VehicleTypeName = x.VehicleTypeName?.Trim()
-            })
-            .ToList();
+        //_mapper
+        var dtos = _mapper.Map<List<VehicleTypeDto>>(apiResult.Value.Results);
+
 
         return Result.Success(dtos);
     }
@@ -99,13 +97,9 @@ public class VehicleService : IVehicleService
             if (api.IsFailure)
                 return Result.Failure<PagedResult<VehicleModelDto>>(api.Error);
 
-            var dtos = api.Value.Results.Select(x => new VehicleModelDto
-            {
-                ModelId = x.ModelId,
-                ModelName = x.ModelName?.Trim(),
-                MakeId = x.MakeId,
-                MakeName = x.MakeName?.Trim()
-            });
+            //_mapper
+            var dtos = _mapper.Map<List<VehicleModelDto>>(api.Value.Results);
+
 
             var paged = _queryModelProcessor.ProcessQuery(dtos, query);
 

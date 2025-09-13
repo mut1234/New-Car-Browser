@@ -1,5 +1,7 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RepoPattrenWithUnitOfWork.Core;
 using RepoPattrenWithUnitOfWork.Core.CQRS.Handllers.Author;
 using RepoPattrenWithUnitOfWork.Core.CQRS.Querys;
@@ -9,6 +11,8 @@ using RepoPattrenWithUnitOfWork.Core.Service.ExternalServices;
 using RepoPattrenWithUnitOfWork.EF;
 using RepoPattrenWithUnitOfWork.EF.Triggers;
 using System.Reflection;
+using AutoMapper;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +50,9 @@ builder.Services.Configure<NhtsaApiSettings>(
 builder.Services.AddMediatR(Assembly.GetAssembly(typeof(GetAllMakesQuery)));
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+//builder.Services.AddTransient<Profile, MappingProfile >();
+
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
 
 builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddHttpClient<INhtsaApiClient, NhtsaApiClient>((sp, client) =>
